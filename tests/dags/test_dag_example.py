@@ -6,7 +6,6 @@ from contextlib import contextmanager
 import pytest
 from airflow.models import DagBag
 
-
 @contextmanager
 def suppress_logging(namespace):
     logger = logging.getLogger(namespace)
@@ -16,7 +15,6 @@ def suppress_logging(namespace):
         yield
     finally:
         logger.disabled = old_value
-
 
 def get_import_errors():
     """

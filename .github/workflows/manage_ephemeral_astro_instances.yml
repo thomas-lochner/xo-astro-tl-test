@@ -1,13 +1,12 @@
 name: Deploy Ephemeral Astro Instance
 run-name: >-
   ${{ 
-    github.action == 'pull_request' && github.event.action == 'closed' && format('{0} is tearing down an ephemeral Astro deployment 🪚', github.actor) ||
+    github.action == 'pull_request' && github.event.action == 'closed' && format('{0} is deleting an ephemeral Astro deployment 🗑️', github.actor) ||
     github.event_name == 'pull_request' && format('{0} is creating an ephemeral Astro deployment 🚀', github.actor)
   }}
 
 on:
   pull_request:
-    branches: ['preview/*']
     types: [opened, reopened, synchronize, closed]
 
 env:
@@ -28,13 +27,18 @@ jobs:
       contents: write
 
     steps:
-    - name: Deploy to Deployment Preview
-      uses: astronomer/deploy-action@v0.8.0
-      with:
-        action: deploy-deployment-preview
-        deploy-type: dbt
-        deployment-id: cm3ywnc6f01ad01mxbm30zrfi
-        root-folder: dbt
+      - name: Create Deployment Preview
+        uses: astronomer/deploy-action@v0.8.0
+        with:
+          action: create-deployment-preview
+          deployment-id: cm3ywnc6f01ad01mxbm30zrfi
+      
+      - name: DAGs/Image Deploy to Astro
+        uses: astronomer/deploy-action@v0.8.0
+        with:
+          deployment-id: cm3ywnc6f01ad01mxbm30zrfi
+          root-folder: dags/
+          parse: true
 
 
   delete-ephemeral-astro-instance:
