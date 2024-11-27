@@ -33,7 +33,7 @@ jobs:
         action: deploy-deployment-preview
         deploy-type: dbt
         deployment-id: cm3ywnc6f01ad01mxbm30zrfi
-        root-folder: dags/dbt
+        root-folder: ../../dags/dbt
 
 
   delete-ephemeral-astro-instance:
