@@ -27,16 +27,10 @@ jobs:
       contents: write
 
     steps:
-      - name: DBT Deploy to Astro
-        uses: astronomer/deploy-action@v0.8.0
-        with:
-          deployment-id: <deployment id>
-          deploy-type: dbt
-          root-folder: dags/dbt/
       - name: DAGs/Image Deploy to Astro
         uses: astronomer/deploy-action@v0.8.0
         with:
-          deployment-id: <deployment id>
+          deployment-id: cm3ywnc6f01ad01mxbm30zrfi
           root-folder: dags/
           parse: true
 
