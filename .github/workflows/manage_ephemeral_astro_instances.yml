@@ -1,0 +1,53 @@
+name: Deploy Ephemeral Astro Instance
+run-name: >-
+  ${{ 
+    github.action == 'pull_request' && github.event.action == 'closed' && format('{0} is tearing down an ephemeral Astro deployment 🪚', github.actor) ||
+    github.event_name == 'pull_request' && format('{0} is creating an ephemeral Astro deployment 🚀', github.actor)
+  }}
+
+on:
+  pull_request:
+    branches:
+      - preview/*
+    types: [opened, reopened, synchronize, closed]
+
+env:
+  ## Sets Deployment API key credentials as environment variables
+  ASTRO_API_TOKEN: ${{ secrets.ASTRO_API_TOKEN }}
+
+jobs:
+  deploy-ephemeral-astro-instance:
+    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-ephemeral-astro-instance-${{ github.event.number }} # One per PR
+      cancel-in-progress: true
+    timeout-minutes: 10  # Timeout added here
+    permissions:
+      pull-requests: write
+      id-token: write
+      contents: write
+
+    steps:
+    - name: Deploy to Deployment Preview
+      uses: astronomer/deploy-action@v0.8.0
+      with:
+        action: deploy-deployment-preview
+        deploy-type: dbt
+        deployment-id: cm3ywnc6f01ad01mxbm30zrfi
+        root-folder: dbt
+
+
+  delete-ephemeral-astro-instance:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      id-token: write
+      contents: write
+    steps:
+    - name: Delete Deployment Preview
+      uses: astronomer/deploy-action@v0.8.0
+      with:
+        action: delete-deployment-preview
+        deployment-id: cm3ywnc6f01ad01mxbm30zrfi
